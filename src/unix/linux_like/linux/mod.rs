@@ -184,6 +184,11 @@ s! {
     }
 
     pub struct input_event {
+        #[cfg(all(target_env = "musl", target_pointer_width = "32"))]
+        pub input_event_sec: ::c_ulong,
+        #[cfg(all(target_env = "musl", target_pointer_width = "32"))]
+        pub input_event_usec: ::c_ulong,
+        #[cfg(not(all(target_env = "musl", target_pointer_width = "32")))]
         pub time: ::timeval,
         pub type_: ::__u16,
         pub code: ::__u16,
@@ -3402,6 +3407,10 @@ cfg_if! {
             pub fn aio_fsync(op: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
             pub fn aio_error(aiocbp: *const aiocb) -> ::c_int;
             pub fn aio_return(aiocbp: *mut aiocb) -> ::ssize_t;
+            #[cfg_attr(
+                all(target_env = "musl", target_pointer_width = "32"),
+                link_name = "__aio_suspend_time64"
+            )]
             pub fn aio_suspend(
                 aiocb_list: *const *const aiocb,
                 nitems: ::c_int,
@@ -3455,6 +3464,10 @@ cfg_if! {
                 riovcnt: ::c_ulong,
                 flags: ::c_ulong,
             ) -> isize;
+            #[cfg_attr(
+                all(target_env = "musl", target_pointer_width = "32"),
+                link_name = "__futimes_time64"
+            )]
             pub fn futimes(
                 fd: ::c_int,
                 times: *const ::timeval
@@ -3472,7 +3485,10 @@ extern "C" {
     pub fn labs(i: ::c_long) -> ::c_long;
     pub fn rand() -> ::c_int;
     pub fn srand(seed: ::c_uint);
-
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__lutimes_time64"
+    )]
     pub fn lutimes(file: *const ::c_char, times: *const ::timeval) -> ::c_int;
 
     pub fn setpwent();
@@ -3590,7 +3606,15 @@ extern "C" {
     pub fn fremovexattr(filedes: ::c_int, name: *const c_char) -> ::c_int;
     pub fn signalfd(fd: ::c_int, mask: *const ::sigset_t, flags: ::c_int) -> ::c_int;
     pub fn timerfd_create(clockid: ::clockid_t, flags: ::c_int) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__timerfd_gettime64"
+    )]
     pub fn timerfd_gettime(fd: ::c_int, curr_value: *mut itimerspec) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__timerfd_settime64"
+    )]
     pub fn timerfd_settime(
         fd: ::c_int,
         flags: ::c_int,
@@ -3612,6 +3636,10 @@ extern "C" {
         msg_len: ::size_t,
         msg_prio: *mut ::c_uint,
     ) -> ::ssize_t;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__mq_timedreceive_time64"
+    )]
     pub fn mq_timedreceive(
         mqd: ::mqd_t,
         msg_ptr: *mut ::c_char,
@@ -3625,6 +3653,10 @@ extern "C" {
         msg_len: ::size_t,
         msg_prio: ::c_uint,
     ) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__mq_timedsend_time64"
+    )]
     pub fn mq_timedsend(
         mqd: ::mqd_t,
         msg_ptr: *const ::c_char,
@@ -3644,6 +3676,10 @@ extern "C" {
     pub fn dup3(oldfd: ::c_int, newfd: ::c_int, flags: ::c_int) -> ::c_int;
     pub fn mkostemp(template: *mut ::c_char, flags: ::c_int) -> ::c_int;
     pub fn mkostemps(template: *mut ::c_char, suffixlen: ::c_int, flags: ::c_int) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__sigtimedwait_time64"
+    )]
     pub fn sigtimedwait(
         set: *const sigset_t,
         info: *mut siginfo_t,
@@ -3759,6 +3795,10 @@ extern "C" {
     pub fn umount(target: *const ::c_char) -> ::c_int;
     pub fn sched_get_priority_max(policy: ::c_int) -> ::c_int;
     pub fn tee(fd_in: ::c_int, fd_out: ::c_int, len: ::size_t, flags: ::c_uint) -> ::ssize_t;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__settimeofday_time64"
+    )]
     pub fn settimeofday(tv: *const ::timeval, tz: *const ::timezone) -> ::c_int;
     pub fn splice(
         fd_in: ::c_int,
@@ -3769,7 +3809,15 @@ extern "C" {
         flags: ::c_uint,
     ) -> ::ssize_t;
     pub fn eventfd(init: ::c_uint, flags: ::c_int) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__sched_rr_get_interval_time64"
+    )]
     pub fn sched_rr_get_interval(pid: ::pid_t, tp: *mut ::timespec) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__sem_timedwait_time64"
+    )]
     pub fn sem_timedwait(sem: *mut sem_t, abstime: *const ::timespec) -> ::c_int;
     pub fn sem_getvalue(sem: *mut sem_t, sval: *mut ::c_int) -> ::c_int;
     pub fn sched_setparam(pid: ::pid_t, param: *const ::sched_param) -> ::c_int;
@@ -3791,6 +3839,10 @@ extern "C" {
     pub fn personality(persona: ::c_ulong) -> ::c_int;
     pub fn prctl(option: ::c_int, ...) -> ::c_int;
     pub fn sched_getparam(pid: ::pid_t, param: *mut ::sched_param) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__ppoll_time64"
+    )]
     pub fn ppoll(
         fds: *mut ::pollfd,
         nfds: nfds_t,
@@ -3806,6 +3858,10 @@ extern "C" {
         protocol: ::c_int,
     ) -> ::c_int;
     pub fn pthread_mutex_consistent(mutex: *mut pthread_mutex_t) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__pthread_mutex_timedlock_time64"
+    )]
     pub fn pthread_mutex_timedlock(
         lock: *mut pthread_mutex_t,
         abstime: *const ::timespec,
@@ -3823,6 +3879,10 @@ extern "C" {
         ...
     ) -> ::c_int;
     pub fn sched_getscheduler(pid: ::pid_t) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__clock_nanosleep_time64"
+    )]
     pub fn clock_nanosleep(
         clk_id: ::clockid_t,
         flags: ::c_int,
@@ -4085,7 +4145,15 @@ extern "C" {
     ) -> ::c_int;
     pub fn timer_delete(timerid: ::timer_t) -> ::c_int;
     pub fn timer_getoverrun(timerid: ::timer_t) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__timer_gettime64"
+    )]
     pub fn timer_gettime(timerid: ::timer_t, curr_value: *mut ::itimerspec) -> ::c_int;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__timer_settime64"
+    )]
     pub fn timer_settime(
         timerid: ::timer_t,
         flags: ::c_int,
