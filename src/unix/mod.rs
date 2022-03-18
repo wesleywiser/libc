@@ -710,6 +710,10 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "fstat@FBSD_1.0"
     )]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__fstat_time64"
+    )]
     pub fn fstat(fildes: ::c_int, buf: *mut stat) -> ::c_int;
 
     pub fn mkdir(path: *const c_char, mode: mode_t) -> ::c_int;
@@ -722,6 +726,10 @@ extern "C" {
     #[cfg_attr(
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "stat@FBSD_1.0"
+    )]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__stat_time64"
     )]
     pub fn stat(path: *const c_char, buf: *mut stat) -> ::c_int;
 
@@ -806,6 +814,10 @@ extern "C" {
     #[cfg_attr(
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "fstatat@FBSD_1.1"
+    )]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__fstatat_time64"
     )]
     pub fn fstatat(
         dirfd: ::c_int,
@@ -913,6 +925,10 @@ extern "C" {
         link_name = "nanosleep$UNIX2003"
     )]
     #[cfg_attr(target_os = "netbsd", link_name = "__nanosleep50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__nanosleep_time64"
+    )]
     pub fn nanosleep(rqtp: *const timespec, rmtp: *mut timespec) -> ::c_int;
     pub fn tcgetpgrp(fd: ::c_int) -> pid_t;
     pub fn tcsetpgrp(fd: ::c_int, pgrp: ::pid_t) -> ::c_int;
@@ -952,6 +968,10 @@ extern "C" {
     pub fn umask(mask: mode_t) -> mode_t;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__utime50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__utime64"
+    )]
     pub fn utime(file: *const c_char, buf: *const utimbuf) -> ::c_int;
 
     #[cfg_attr(
@@ -1000,6 +1020,10 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "lstat@FBSD_1.0"
     )]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__lstat_time64"
+    )]
     pub fn lstat(path: *const c_char, buf: *mut stat) -> ::c_int;
 
     #[cfg_attr(
@@ -1027,6 +1051,10 @@ extern "C" {
     pub fn signal(signum: ::c_int, handler: sighandler_t) -> sighandler_t;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__getrusage50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__getrusage_time64"
+    )]
     pub fn getrusage(resource: ::c_int, usage: *mut rusage) -> ::c_int;
 
     #[cfg_attr(
@@ -1093,6 +1121,10 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_cond_timedwait$UNIX2003"
     )]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__pthread_cond_timedwait_time64"
+    )]
     pub fn pthread_cond_timedwait(
         cond: *mut pthread_cond_t,
         lock: *mut pthread_mutex_t,
@@ -1158,9 +1190,17 @@ extern "C" {
     pub fn sigaction(signum: ::c_int, act: *const sigaction, oldact: *mut sigaction) -> ::c_int;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__utimes50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__utimes_time64"
+    )]
     pub fn utimes(filename: *const ::c_char, times: *const ::timeval) -> ::c_int;
     pub fn dlopen(filename: *const ::c_char, flag: ::c_int) -> *mut ::c_void;
     pub fn dlerror() -> *mut ::c_char;
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__dlsym_time64"
+    )]
     pub fn dlsym(handle: *mut ::c_void, symbol: *const ::c_char) -> *mut ::c_void;
     pub fn dlclose(handle: *mut ::c_void) -> ::c_int;
     pub fn dladdr(addr: *const ::c_void, info: *mut Dl_info) -> ::c_int;
@@ -1203,40 +1243,56 @@ extern "C" {
     pub fn res_init() -> ::c_int;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__gmtime_r50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__gmtime64_r"
+    )]
     pub fn gmtime_r(time_p: *const time_t, result: *mut tm) -> *mut tm;
     #[cfg_attr(target_os = "netbsd", link_name = "__localtime_r50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__localtime64_r"
+    )]
     pub fn localtime_r(time_p: *const time_t, result: *mut tm) -> *mut tm;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "mktime$UNIX2003"
     )]
     #[cfg_attr(target_os = "netbsd", link_name = "__mktime50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__mktime64"
+    )]
     pub fn mktime(tm: *mut tm) -> time_t;
     #[cfg_attr(target_os = "netbsd", link_name = "__time50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__time64"
+    )]
     pub fn time(time: *mut time_t) -> time_t;
     #[cfg_attr(target_os = "netbsd", link_name = "__gmtime50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__gmtime64"
+    )]
     pub fn gmtime(time_p: *const time_t) -> *mut tm;
     #[cfg_attr(target_os = "netbsd", link_name = "__locatime50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__localtime64"
+    )]
     pub fn localtime(time_p: *const time_t) -> *mut tm;
     #[cfg_attr(target_os = "netbsd", link_name = "__difftime50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__difftime64"
+    )]
     pub fn difftime(time1: time_t, time0: time_t) -> ::c_double;
     #[cfg_attr(target_os = "netbsd", link_name = "__timegm50")]
-    #[cfg_attr(target_env = "musl", allow(deprecated))]
-    // FIXME: for `time_t`
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__timegm_time64"
+    )]
     pub fn timegm(tm: *mut ::tm) -> time_t;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__mknod50")]
@@ -1291,6 +1347,10 @@ extern "C" {
         link_name = "select$UNIX2003"
     )]
     #[cfg_attr(target_os = "netbsd", link_name = "__select50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__select_time64"
+    )]
     pub fn select(
         nfds: ::c_int,
         readfs: *mut fd_set,
@@ -1343,6 +1403,10 @@ extern "C" {
         link_name = "pselect$UNIX2003"
     )]
     #[cfg_attr(target_os = "netbsd", link_name = "__pselect50")]
+    #[cfg_attr(
+        all(target_env = "musl", target_pointer_width = "32"),
+        link_name = "__pselect_time64"
+    )]
     pub fn pselect(
         nfds: ::c_int,
         readfs: *mut fd_set,
