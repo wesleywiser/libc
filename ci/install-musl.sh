@@ -39,6 +39,9 @@ case ${1} in
         # unset CROSS_COMPILE when running make; otherwise the makefile will
         # call the non-existent binary 'i686-ar'.
         make CROSS_COMPILE= install -j4
+        ls "/musl-${musl_arch}/lib"
+        readelf -a "/musl-${musl_arch}/lib/libc.a" | grep fstat_time64
+        #ldd "/musl-${musl_arch}/lib/libc.a"
         ;;
     x86_64)
         musl_arch=x86_64
