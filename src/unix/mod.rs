@@ -74,6 +74,8 @@ s! {
         pub tv_nsec: i64,
         #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
         pub tv_nsec: ::c_long,
+        #[cfg(musl_time64_abi)]
+        __pad0: u32
     }
 
     pub struct rlimit {
@@ -1404,6 +1406,7 @@ cfg_if! {
                      target_os = "android",
                      target_os = "haiku")))] {
         extern "C" {
+            #[cfg_attr(musl_time64_abi, link_name = "__adjtime64")]
             pub fn adjtime(delta: *const timeval, olddelta: *mut timeval) -> ::c_int;
             pub fn stpncpy(dst: *mut c_char, src: *const c_char, n: size_t) -> *mut c_char;
         }
