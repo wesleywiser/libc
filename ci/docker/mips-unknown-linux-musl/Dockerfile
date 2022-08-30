@@ -22,4 +22,4 @@ ENV PATH=$PATH:/rust/bin:/toolchain/staging_dir/toolchain-mips_24kc_gcc-11.2.0_m
     CC_mips_unknown_linux_musl=mips-openwrt-linux-musl-gcc \
     CARGO_TARGET_MIPS_UNKNOWN_LINUX_MUSL_LINKER=mips-openwrt-linux-musl-gcc \
     CARGO_TARGET_MIPS_UNKNOWN_LINUX_MUSL_RUNNER="qemu-mips -L /toolchain/staging_dir/toolchain-mips_24kc_gcc-11.2.0_musl" \
-    RUSTFLAGS="-L /toolchain/staging_dir/toolchain-mips_24kc_gcc-11.2.0_musl/lib"
+    RUSTFLAGS="-Clink-self-contained=off -L /toolchain/staging_dir/toolchain-mips_24kc_gcc-11.2.0_musl/lib"

@@ -10,4 +10,4 @@ RUN sh /install-musl.sh i686
 
 ENV PATH=$PATH:/musl-i686/bin:/rust/bin \
     CC_i686_unknown_linux_musl=musl-gcc \
-    RUSTFLAGS="-L /musl-i686/lib"
+    RUSTFLAGS="-Clink-self-contained=off -L /musl-i686/lib"

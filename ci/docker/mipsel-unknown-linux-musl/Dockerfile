@@ -22,4 +22,4 @@ ENV PATH=$PATH:/rust/bin:/toolchain/staging_dir/toolchain-mipsel_mips32_gcc-11.2
     CC_mipsel_unknown_linux_musl=mipsel-openwrt-linux-musl-gcc \
     CARGO_TARGET_MIPSEL_UNKNOWN_LINUX_MUSL_LINKER=mipsel-openwrt-linux-musl-gcc \
     CARGO_TARGET_MIPSEL_UNKNOWN_LINUX_MUSL_RUNNER="qemu-mipsel -L /toolchain/staging_dir/toolchain-mipsel_mips32_gcc-11.2.0_musl" \
-    RUSTFLAGS="-L /toolchain/staging_dir/toolchain-mipsel_mips32_gcc-11.2.0_musl/lib"
+    RUSTFLAGS="-Clink-self-contained=off -L /toolchain/staging_dir/toolchain-mipsel_mips32_gcc-11.2.0_musl/lib"
